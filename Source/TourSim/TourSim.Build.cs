@@ -8,7 +8,29 @@ public class TourSim : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
+			"Core", 
+			"CoreUObject", 
+			"Engine", 
+			"InputCore", 
+			
+			// UI
+			"UMG",
+			
+			// AI
+			"AIModule",
+			"NavigationSystem",
+			"MassEntity",       
+			"MassCrowd",        
+			"MassActors",       
+			"MassMovement",     
+			"MassReplication",  
+			"MassSimulation",   
+			"MassSpawner",      
+			"MassLOD",          
+			"MassRepresentation",
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
