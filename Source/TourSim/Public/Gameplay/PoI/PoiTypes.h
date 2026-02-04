@@ -31,8 +31,16 @@ struct FWorkingHours
     
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Working Hours")
 	int32 CloseHour = 18; // 18:00
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Working Hours")
+	bool bIsAllDay = false;
 
-	bool IsOpenAtTime(const FDateTime& DateTime) const;
+	bool IsOpenAtTime(const FDateTime& DateTime) const
+	{
+		const int32 CurrentHour = DateTime.GetHour();
+		
+		return bIsAllDay || (CurrentHour >= OpenHour && CurrentHour <= CloseHour);
+	}
 };
 
 USTRUCT(BlueprintType)

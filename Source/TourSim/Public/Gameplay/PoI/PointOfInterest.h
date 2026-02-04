@@ -8,7 +8,6 @@
 
 struct FMassEntityHandle;
 struct FPoiConfiguration;
-class UMassAgentSubsystem;
 class UBoxComponent;
 class UWidgetComponent;
 class UPoiDataComponent;
@@ -42,8 +41,8 @@ protected:
 	TObjectPtr<UBoxComponent> InteractionVolume;
     
 	// MassAI Integration
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MassAI")
-	TObjectPtr<UMassAgentSubsystem> MassAgentSubsystem;
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MassAI")
+	// TObjectPtr<UMassAgentSubsystem> MassAgentSubsystem;
     
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MassAI")
 	//FMassEntityConfigHandle AgentConfigHandle;
