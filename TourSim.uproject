@@ -37,10 +37,6 @@
 		{
 			"Name": "MassCrowd",
 			"Enabled": true
-		},
-		{
-			"Name": "MassEntity",
-			"Enabled": true
 		}
 	]
 }
