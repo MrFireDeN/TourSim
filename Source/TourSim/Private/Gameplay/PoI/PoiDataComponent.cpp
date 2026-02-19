@@ -28,4 +28,3 @@ bool UPoiDataComponent::CanAcceptMoreAgents() const
 {
 	return true;
 }
-
