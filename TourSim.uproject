@@ -37,6 +37,10 @@
 		{
 			"Name": "MassCrowd",
 			"Enabled": true
+		},
+		{ 
+			"Name": "MassGameplay", 
+			"Enabled": true
 		}
 	]
 }
