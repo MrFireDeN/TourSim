@@ -4,6 +4,7 @@
 #include "Gameplay/Spawn/TourSimSpawnSubsystem.h"
 
 #include "Gameplay/Spawn/AgentSpawnSourceBase.h"
+#include "Gameplay/Spawn/TourSimSpawnLog.h"
 
 void UTourSimSpawnSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -45,8 +46,8 @@ void UTourSimSpawnSubsystem::Tick(float DeltaTime)
 		return;
 	}
 
-	// Round-robin distribution: allocate in passes until budget depleted
-	// Each pass gives each source up to its local quota.
+	TMap<TWeakObjectPtr<AAgentSpawnSourceBase>, int32> AllocatedPerSource;
+	
 	int32 SafetyCounter = 0;
 	const int32 SafetyMax = NumSources * 16; // prevents infinite loops if quotas misbehave
 
@@ -69,22 +70,47 @@ void UTourSimSpawnSubsystem::Tick(float DeltaTime)
 				continue;
 			}
 
-			// Reserve quota (actual consumption happens later: generator can fail validation)
-			FSpawnRequest Req;
-			Req.Source = Src;
-			Req.Count  = Quota;
-			CachedRequests.Add(Req);
-
+			AllocatedPerSource.FindOrAdd(Src) += Quota;
 			BudgetLeft -= Quota;
 			bAnyAllocatedThisPass = true;
 		}
 
-		// Next frame starts from next source for fairness
 		RoundRobinIndex = (RoundRobinIndex + 1) % NumSources;
 
 		if (!bAnyAllocatedThisPass)
 		{
-			break; // no one can spawn anything right now
+			break;
+		}
+	}
+	
+	for (const TPair<TWeakObjectPtr<AAgentSpawnSourceBase>, int32>& Kvp : AllocatedPerSource)
+	{
+		if (!Kvp.Key.IsValid() || Kvp.Value <= 0)
+		{
+			continue;
+		}
+
+		FSpawnRequest Req;
+		Req.Source = Kvp.Key;
+		Req.Count = Kvp.Value;
+		CachedRequests.Add(Req);
+	}
+	
+	UE_LOG(LogTourSimSpawn, Warning,
+	TEXT("[SpawnSubsystem] Sources=%d  Requests=%d  GlobalBudget=%d"),
+	Sources.Num(),
+	CachedRequests.Num(),
+	GlobalMaxSpawnPerTick);
+
+	for (const FSpawnRequest& Req : CachedRequests)
+	{
+		if (AAgentSpawnSourceBase* Src = Req.Source.Get())
+		{
+			UE_LOG(LogTourSimSpawn, Warning,
+				TEXT("   -> %s  Count=%d  PendingQueue=%.2f"),
+				*Src->GetName(),
+				Req.Count,
+				Src->GetPendingQueue());
 		}
 	}
 }

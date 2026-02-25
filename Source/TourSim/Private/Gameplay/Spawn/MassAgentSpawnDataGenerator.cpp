@@ -3,11 +3,11 @@
 
 #include "Gameplay/Spawn/MassAgentSpawnDataGenerator.h"
 
+#include "MassEntityConfigAsset.h"
 #include "MassSpawnLocationProcessor.h"
-#include "NavigationSystem.h"
 #include "Gameplay/Spawn/AgentSpawnSourceBase.h"
+#include "Gameplay/Spawn/TourSimSpawnLog.h"
 #include "Gameplay/Spawn/TourSimSpawnSubsystem.h"
-#include "GeometryCollection/GeometryCollectionParticlesData.h"
 
 void UMassAgentSpawnDataGenerator::Generate(
 	UObject& QueryOwner, 
@@ -15,12 +15,32 @@ void UMassAgentSpawnDataGenerator::Generate(
 	int32 Count, 
 	FFinishedGeneratingSpawnDataSignature& FinishedGeneratingSpawnPointsDelegate) const
 {
+	UE_LOG(LogTourSimSpawn, Warning,
+	TEXT("[Generator] Requested=%d  EntityTypes=%d"),
+	Count,
+	EntityTypes.Num());
+	
 	UWorld* World = QueryOwner.GetWorld();
 	if (!World || Count <= 0)
 	{
 		static const TArray<FMassEntitySpawnDataGeneratorResult> Empty;
 		FinishedGeneratingSpawnPointsDelegate.ExecuteIfBound(Empty);
 		return;
+	}
+	
+	for (int32 i = 0; i < EntityTypes.Num(); ++i)
+	{
+		const FMassSpawnedEntityType& T = EntityTypes[i];
+
+		const UObject* AssetObj = T.EntityConfig.Get(); // может быть null если не загружен
+		const FString AssetName = AssetObj ? AssetObj->GetName() : TEXT("NULL");
+		const FString AssetPath = T.EntityConfig.ToSoftObjectPath().ToString();
+
+		UE_LOG(LogTourSimSpawn, Warning,
+			TEXT("[Generator] EntityType[%d] ConfigName=%s  ConfigPath=%s"),
+			i,
+			*AssetName,
+			*AssetPath);
 	}
 	
 	UTourSimSpawnSubsystem* SpawnSubsystem = World->GetSubsystem<UTourSimSpawnSubsystem>();
@@ -41,6 +61,11 @@ void UMassAgentSpawnDataGenerator::Generate(
 	}
 	
 	const int32 AllowedCount = FMath::Min(Count, BudgetAllowed);
+	
+	UE_LOG(LogTourSimSpawn, Warning,
+	TEXT("[Generator] AllowedByBudget=%d"),
+	AllowedCount);
+	
 	if (AllowedCount <= 0)
 	{
 		static const TArray<FMassEntitySpawnDataGeneratorResult> Empty;
@@ -58,85 +83,128 @@ void UMassAgentSpawnDataGenerator::Generate(
 		return;
 	}
 	
-	TArray<FTransform> TransformPool;
-	TransformPool.Reserve(AllowedCount);
-	
-	int32 RequestIndex = 0;
-	
-	while (TransformPool.Num() < AllowedCount && RequestIndex < Results.Num())
+	// Подготовка SpawnData для каждого slice
+	struct FSliceBuild
 	{
-		FSpawnRequest& Request = Requests[RequestIndex];
-		AAgentSpawnSourceBase* Source = Request.Source.Get();
-		
-		if (!IsValid(Source) || Request.Count <= 0)
+		FMassEntitySpawnDataGeneratorResult* Result = nullptr;
+		FMassTransformsSpawnData SpawnData;
+		int32 Remaining = 0;
+	};
+
+	TArray<FSliceBuild> Slices;
+	Slices.Reserve(Results.Num());
+
+	for (FMassEntitySpawnDataGeneratorResult& R : Results)
+	{
+		if (R.NumEntities <= 0)
 		{
-			++RequestIndex;
 			continue;
 		}
-		
-		const int32 Remaining = AllowedCount - TransformPool.Num();
-		const int32 WantFromThisSource = FMath::Min(Request.Count, Remaining);
-		
-		for (int32 Index = 0; Index < WantFromThisSource; ++Index)
+
+		FSliceBuild& S = Slices.AddDefaulted_GetRef();
+		S.Result = &R;
+		S.Remaining = R.NumEntities;
+
+		S.SpawnData.bRandomize = bRandomizeOutputTransforms;
+		S.SpawnData.Transforms.Reserve(R.NumEntities);
+	}
+
+	// Итератор по Requests: достаём валидные точки из источников
+	int32 RequestIndex = 0;
+
+	auto TryPullOneTransform = [&](FTransform& OutXform) -> bool
+	{
+		while (RequestIndex < Requests.Num())
 		{
+			FSpawnRequest& Request = Requests[RequestIndex];
+			AAgentSpawnSourceBase* Source = Request.Source.Get();
+
+			if (!IsValid(Source) || Request.Count <= 0)
+			{
+				++RequestIndex;
+				continue;
+			}
+
 			FTransform Xform;
 			if (!TryBuildValidatedTransform(*World, QueryOwner, Source, Xform))
 			{
 				Request.Count = 0;
-				break;
+				++RequestIndex;
+				continue;
 			}
-			
+
 			if (!Source->TryConsumeOne())
 			{
 				Request.Count = 0;
-				break;
+				++RequestIndex;
+				continue;
 			}
-			
-			TransformPool.Add(Xform);
+
 			Request.Count -= 1;
-			
-			if (TransformPool.Num() >= AllowedCount)
+			OutXform = Xform;
+			return true;
+		}
+
+		return false;
+	};
+
+	// Round-robin раздача точек по типам (гарантирует присутствие обоих, если хотя бы 2 точки есть)
+	const TSubclassOf<UMassProcessor> ProcessorClass =
+		SpawnDataProcessorClass ? *SpawnDataProcessorClass : UMassSpawnLocationProcessor::StaticClass();
+
+	int32 Safety = 0;
+	const int32 SafetyMax = AllowedCount * 4;
+
+	int32 SliceIndex = 0;
+	while (Safety++ < SafetyMax)
+	{
+		bool bAnyRemaining = false;
+
+		for (int32 Iter = 0; Iter < Slices.Num(); ++Iter)
+		{
+			FSliceBuild& S = Slices[(SliceIndex + Iter) % Slices.Num()];
+			if (S.Remaining <= 0)
 			{
+				continue;
+			}
+
+			bAnyRemaining = true;
+
+			FTransform Xform;
+			if (!TryPullOneTransform(Xform))
+			{
+				// точек больше нет вообще
+				SliceIndex = (SliceIndex + Iter) % Slices.Num();
+				Safety = SafetyMax; // break outer
 				break;
 			}
+
+			S.SpawnData.Transforms.Add(Xform);
+			S.Remaining -= 1;
 		}
-		
-		++RequestIndex;
+
+		if (!bAnyRemaining)
+		{
+			break;
+		}
+
+		SliceIndex = (SliceIndex + 1) % Slices.Num();
 	}
-	
-	const TSubclassOf<UMassProcessor> ProcessorClass = 
-		SpawnDataProcessorClass ? *SpawnDataProcessorClass : UMassSpawnLocationProcessor::StaticClass();
-	
-	int32 PoolOffset = 0;
-	
-	for (FMassEntitySpawnDataGeneratorResult& Result : Results)
+
+	// Финализация Result’ов
+	for (FSliceBuild& S : Slices)
 	{
-		const int32 RemainingInPool = TransformPool.Num() - PoolOffset;
-		const int32 ActualCount = FMath::Min(Result.NumEntities, FMath::Max(0, RemainingInPool));
-		
-		if (ActualCount <= 0)
+		const int32 Produced = S.SpawnData.Transforms.Num();
+
+		S.Result->NumEntities = Produced;
+		if (Produced > 0)
 		{
-			Result.NumEntities = 0;
-			continue;
+			S.Result->SpawnDataProcessor = ProcessorClass;
+			S.Result->PostSpawnProcessors.Reset();
+			S.Result->SpawnData = FInstancedStruct::Make<FMassTransformsSpawnData>(MoveTemp(S.SpawnData));
 		}
-		
-		FMassTransformsSpawnData SpawnData;
-		SpawnData.bRandomize = bRandomizeOutputTransforms;
-		SpawnData.Transforms.Reserve(ActualCount);
-		
-		for (int32 Index = 0; Index < ActualCount; ++Index)
-		{
-			SpawnData.Transforms.Add(TransformPool[Index + PoolOffset]);
-		}
-		
-		PoolOffset += ActualCount;
-		
-		Result.NumEntities = ActualCount;
-		Result.SpawnDataProcessor = ProcessorClass;
-		Result.PostSpawnProcessors.Reset();
-		Result.SpawnData = FInstancedStruct::Make<FMassTransformsSpawnData>(MoveTemp(SpawnData));
 	}
-	
+
 	FinishedGeneratingSpawnPointsDelegate.ExecuteIfBound(Results);
 }
 
@@ -145,7 +213,7 @@ bool UMassAgentSpawnDataGenerator::TryBuildValidatedTransform(UWorld& World, UOb
 {
 	AAgentSpawnSourceBase* Source = Cast<AAgentSpawnSourceBase>(SourceActor);
 	
-	if (Cast<AAgentSpawnSourceBase>(SourceActor))
+	if (!Cast<AAgentSpawnSourceBase>(SourceActor))
 	{
 		return false;
 	}
@@ -160,6 +228,10 @@ bool UMassAgentSpawnDataGenerator::TryBuildValidatedTransform(UWorld& World, UOb
 		
 		if (!ValidatePoint(World, QueryOwner, SourceActor, Candidate))
 		{
+			UE_LOG(LogTourSimSpawn, Warning,
+				TEXT("[Generator] Validation failed for source %s"),
+				*SourceActor->GetName());
+
 			continue;
 		}
 		
@@ -173,68 +245,36 @@ bool UMassAgentSpawnDataGenerator::TryBuildValidatedTransform(UWorld& World, UOb
 bool UMassAgentSpawnDataGenerator::ValidatePoint(UWorld& World, UObject& QueryOwner, AActor* SourceActor,
 	FTransform& InOutTransform) const
 {
-	FVector Pos = InOutTransform.GetLocation();
-	
-	
-	if (!ProjectToNavmesh(World, Pos))
+	AAgentSpawnSourceBase* Source = Cast<AAgentSpawnSourceBase>(SourceActor);
+	if (!IsValid(Source))
 	{
 		return false;
 	}
 	
-	if (!GroundTrace(World, InOutTransform, SourceActor))
-	{
-		return false;
-	}
-	
-	if (!CapsuleOverlapTest(World, InOutTransform, QueryOwner, SourceActor))
-	{
-		return false;
-	}
-	
-	return true;
-}
+	FVector P = InOutTransform.GetLocation();
+	const float SourceZ = Source->GetActorLocation().Z;
+	P.Z = SourceZ + CapsuleHalfHeight + GroundZOffset;
+	InOutTransform.SetLocation(P);
 
-bool UMassAgentSpawnDataGenerator::ProjectToNavmesh(UWorld& World, FVector& InOutPosition) const
-{
-	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(&World);
-	if (!NavSystem)
-	{
-		return false;
-	}
-	
-	FNavLocation Projected;
-	if (!NavSystem->ProjectPointToNavigation(InOutPosition, Projected, NavQueryExtent))
-	{
-		return false;
-	}
-	
-	InOutPosition = Projected.Location;
-	return true;
-}
+	constexpr int32 MaxLiftSteps = 10;
+	constexpr float LiftStepCm = 20.f;
 
-bool UMassAgentSpawnDataGenerator::GroundTrace(UWorld& World, FTransform& InOutTransform, AActor* SourceActor) const
-{
-	const FVector Base	= InOutTransform.GetLocation();
-	const FVector Start = Base + FVector(0, 0, TraceHeightUp);
-	const FVector End	= Base - FVector(0, 0, TraceHeightDown);
-	
-	FHitResult Hit;
-	FCollisionQueryParams Params(SCENE_QUERY_STAT(TourSimSpawn_GroundTrace), false);
-	
-	if (SourceActor)
+	for (int32 Step = 0; Step <= MaxLiftSteps; ++Step)
 	{
-		Params.AddIgnoredActor(SourceActor);
+		if (CapsuleOverlapTest(World, InOutTransform, QueryOwner, SourceActor))
+		{
+			return true;
+		}
+
+		P = InOutTransform.GetLocation();
+		P.Z += LiftStepCm;
+		InOutTransform.SetLocation(P);
 	}
-	
-	if (!World.LineTraceSingleByChannel(Hit, Start, End, ECC_WorldStatic, Params))
-	{
-		return false;
-	}
-	
-	FVector Adjusted = Hit.ImpactPoint;
-	Adjusted.Z += CapsuleHalfHeight + GroundZOffset;
-	InOutTransform.SetLocation(Adjusted);
-	return true;
+
+	UE_LOG(LogTourSimSpawn, Warning, TEXT("[Validate] CapsuleOverlap FAIL after lift. Source=%s Pos=%s"),
+		SourceActor ? *SourceActor->GetName() : TEXT("None"),
+		*InOutTransform.GetLocation().ToString());
+	return false;
 }
 
 bool UMassAgentSpawnDataGenerator::CapsuleOverlapTest(UWorld& World, const FTransform& Transform, UObject& QueryOwner,

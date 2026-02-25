@@ -109,4 +109,5 @@ public:
 
 	ESpawnSourceType GetSourceType() const { return SourceType; }
 	
+	float GetPendingQueue() const { return PendingQueue; }
 };

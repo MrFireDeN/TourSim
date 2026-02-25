@@ -4,8 +4,11 @@
 #include "Gameplay/Spawn/AgentSpawnSourceBase.h"
 
 #include "Components/BoxComponent.h"
+#include "Gameplay/Spawn/TourSimSpawnLog.h"
+#include "Gameplay/Spawn/TourSimSpawnSubsystem.h"
 #include "Kismet/KismetMathLibrary.h"
 
+DEFINE_LOG_CATEGORY(LogTourSimSpawn);
 
 AAgentSpawnSourceBase::AAgentSpawnSourceBase()
 {
@@ -22,15 +25,27 @@ void AAgentSpawnSourceBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	// GetWorld()->GetSubsystem<UTourSimSpawnSubsystem>()->RegisterSource(this);
+	if (UTourSimSpawnSubsystem* Subsys = GetWorld()->GetSubsystem<UTourSimSpawnSubsystem>())
+	{
+		Subsys->RegisterSource(this);
+
+		UE_LOG(LogTourSimSpawn, Warning,
+			TEXT("[SpawnSource] Registered: %s  Type=%d"),
+			*GetName(),
+			static_cast<int32>(SourceType));
+	}
 }
 
 void AAgentSpawnSourceBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	// if (auto* Subsys = GetWorld()->GetSubsystem<UTourSimSpawnSubsystem>())
-	// {
-	//     Subsys->UnregisterSource(this);
-	// }
+	if (UTourSimSpawnSubsystem* Subsys = GetWorld()->GetSubsystem<UTourSimSpawnSubsystem>())
+	{
+		Subsys->UnregisterSource(this);
+
+		UE_LOG(LogTourSimSpawn, Warning,
+			TEXT("[SpawnSource] Unregistered: %s"),
+			*GetName());
+	}
 	
 	Super::EndPlay(EndPlayReason);
 }

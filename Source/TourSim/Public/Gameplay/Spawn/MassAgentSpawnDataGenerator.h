@@ -43,8 +43,6 @@ private:
 	bool TryBuildValidatedTransform(UWorld& World, UObject& QueryOwner, AActor* SourceActor, FTransform& OutTransform) const;
 
 	bool ValidatePoint(UWorld& World, UObject& QueryOwner, AActor* SourceActor, FTransform& InOutTransform) const;
-	bool ProjectToNavmesh(UWorld& World, FVector& InOutPosition) const;
-	bool GroundTrace(UWorld& World, FTransform& InOutTransform, AActor* SourceActor) const;
 	bool CapsuleOverlapTest(UWorld& World, const FTransform& Transform, UObject& QueryOwner, AActor* SourceActor) const;
 
 private:
