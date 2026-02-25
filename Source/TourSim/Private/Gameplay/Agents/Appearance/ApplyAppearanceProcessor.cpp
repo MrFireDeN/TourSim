@@ -1,15 +1,14 @@
 ﻿// © 2026 Denis Sviridov. MIT License.
 
 
-#include "Gameplay/Agents/ApplyAppearanceProcessor.h"
+#include "Gameplay/Agents/Appearance/ApplyAppearanceProcessor.h"
 
 #include "MassActorSubsystem.h"
-#include "Gameplay/Agents/AgentAppearanceFragment.h"
 #include "MassRepresentationFragments.h"
+#include "Gameplay/Agents/Appearance/AgentAppearanceFragment.h"
 
 static uint32 HashAppearance(const FAgentAppearanceFragment& A)
 {
-	// Достаточно для MVP. Если надо — сделаем стабильнее/точнее.
 	uint32 H = 0;
 	H = HashCombineFast(H, GetTypeHash(A.TopColor));
 	H = HashCombineFast(H, GetTypeHash(A.BottomColor));
@@ -79,7 +78,7 @@ void UApplyAppearanceProcessor::Execute(FMassEntityManager& EntityManager, FMass
 
 			if (!bIsSpawnedActor)
 				continue;
-
+			
 			AActor* Actor = const_cast<AActor*>(Actors[i].Get());
 			if (!Actor)
 				continue;
@@ -87,7 +86,6 @@ void UApplyAppearanceProcessor::Execute(FMassEntityManager& EntityManager, FMass
 			const FObjectKey ActorKey(Actor);
 			const uint32 ColorHash = HashAppearance(Appearances[i]);
 
-			// Если actor тот же и цвета те же — ничего не делаем
 			if (Applied[i].LastActorKey == ActorKey && Applied[i].LastColorHash == ColorHash)
 				continue;
 

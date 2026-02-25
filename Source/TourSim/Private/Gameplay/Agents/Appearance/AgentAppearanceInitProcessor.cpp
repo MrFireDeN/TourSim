@@ -1,6 +1,6 @@
 ﻿// © 2026 Denis Sviridov. MIT License.
 
-#include "Gameplay/Agents/AgentAppearanceInitProcessor.h"
+#include "Gameplay/Agents/Appearance/AgentAppearanceInitProcessor.h"
 #include "MassCommonFragments.h"
 #include "MassEntityQuery.h"
 #include "MassExecutionContext.h"

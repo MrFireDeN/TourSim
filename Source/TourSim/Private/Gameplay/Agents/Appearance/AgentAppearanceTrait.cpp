@@ -1,9 +1,9 @@
 ﻿// © 2026 Denis Sviridov. MIT License.
 
 
-#include "Gameplay/Agents/AgentAppearanceTrait.h"
+#include "Gameplay/Agents/Appearance/AgentAppearanceTrait.h"
 #include "MassEntityTemplateRegistry.h"
-#include "Gameplay/Agents/AppearanceAppliedFragment.h"
+#include "Gameplay/Agents/Appearance/AppearanceAppliedFragment.h"
 
 void UAgentAppearanceTrait::BuildTemplate(FMassEntityTemplateBuildContext& BuildContext, const UWorld& World) const
 {
