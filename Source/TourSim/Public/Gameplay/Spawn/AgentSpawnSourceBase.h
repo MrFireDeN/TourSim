@@ -9,6 +9,9 @@
 
 class UBoxComponent;
 
+/**
+ * Logical spawn source type used to drive spawn-dependent initialization.
+ */
 UENUM(BlueprintType)
 enum class ESpawnSourceType : uint8
 {
