@@ -1,13 +1,13 @@
 ﻿// © 2026 Denis Sviridov. MIT License.
 
 
-#include "Gameplay/Agents/Appearance/ApplyAppearanceProcessor.h"
+#include "Gameplay/Agents/Appearance/TouristApplyAppearanceProcessor.h"
 
 #include "MassActorSubsystem.h"
 #include "MassRepresentationFragments.h"
-#include "Gameplay/Agents/Appearance/AgentAppearanceFragment.h"
+#include "Gameplay/Agents/Appearance/TouristAppearanceFragment.h"
 
-static uint32 HashAppearance(const FAgentAppearanceFragment& A)
+static uint32 HashAppearance(const FTouristAppearanceFragment& A)
 {
 	uint32 H = 0;
 	H = HashCombineFast(H, GetTypeHash(A.TopColor));
@@ -16,7 +16,7 @@ static uint32 HashAppearance(const FAgentAppearanceFragment& A)
 	return H;
 }
 
-static void ApplyToActor(AActor* Actor, const FAgentAppearanceFragment& Appearance)
+static void ApplyToActor(AActor* Actor, const FTouristAppearanceFragment& Appearance)
 {
 	USkeletalMeshComponent* Mesh = Actor->FindComponentByClass<USkeletalMeshComponent>();
 	if (!Mesh)
@@ -38,7 +38,7 @@ static void ApplyToActor(AActor* Actor, const FAgentAppearanceFragment& Appearan
 	}
 }
 
-UApplyAppearanceProcessor::UApplyAppearanceProcessor()
+UTouristApplyAppearanceProcessor::UTouristApplyAppearanceProcessor()
 {
 	ExecutionFlags = (int32)EProcessorExecutionFlags::All;
 	ProcessingPhase = EMassProcessingPhase::PostPhysics;
@@ -46,25 +46,25 @@ UApplyAppearanceProcessor::UApplyAppearanceProcessor()
 	bRequiresGameThreadExecution = true;
 }
 
-void UApplyAppearanceProcessor::ConfigureQueries()
+void UTouristApplyAppearanceProcessor::ConfigureQueries()
 {
-	EntityQuery.AddRequirement<FAgentAppearanceFragment>(EMassFragmentAccess::ReadOnly);
+	EntityQuery.AddRequirement<FTouristAppearanceFragment>(EMassFragmentAccess::ReadOnly);
 	EntityQuery.AddRequirement<FMassRepresentationFragment>(EMassFragmentAccess::ReadOnly);
 	EntityQuery.AddRequirement<FMassActorFragment>(EMassFragmentAccess::ReadOnly);
-	EntityQuery.AddRequirement<FAppearanceAppliedFragment>(EMassFragmentAccess::ReadWrite);
+	EntityQuery.AddRequirement<FTouristAppearanceAppliedFragment>(EMassFragmentAccess::ReadWrite);
 
 	EntityQuery.RegisterWithProcessor(*this);
 }
 
-void UApplyAppearanceProcessor::Execute(FMassEntityManager& EntityManager, FMassExecutionContext& Context)
+void UTouristApplyAppearanceProcessor::Execute(FMassEntityManager& EntityManager, FMassExecutionContext& Context)
 {
 	check(IsInGameThread());
 	
 	EntityQuery.ForEachEntityChunk(EntityManager, Context, [&](FMassExecutionContext& Ctx)
 	{
-		const auto Appearances = Ctx.GetFragmentView<FAgentAppearanceFragment>();
+		const auto Appearances = Ctx.GetFragmentView<FTouristAppearanceFragment>();
 		const auto Reps        = Ctx.GetFragmentView<FMassRepresentationFragment>();
-		auto Applied           = Ctx.GetMutableFragmentView<FAppearanceAppliedFragment>();
+		auto Applied           = Ctx.GetMutableFragmentView<FTouristAppearanceAppliedFragment>();
 
 		auto Actors = Ctx.GetFragmentView<FMassActorFragment>();
 		

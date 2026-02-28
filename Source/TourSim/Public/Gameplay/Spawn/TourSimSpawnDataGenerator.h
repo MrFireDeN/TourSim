@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "MassEntitySpawnDataGeneratorBase.h"
-#include "MassAgentSpawnDataGenerator.generated.h"
+#include "TourSimSpawnDataGenerator.generated.h"
 
 class UTourSimSpawnSubsystem;
-class AAgentSpawnSourceBase;
+class ATouristSpawnSourceBase;
 class UMassProcessor;
 
 /**
@@ -28,7 +28,7 @@ class UMassProcessor;
  * - Ensures Transforms.Num() == Result.NumEntities to avoid engine-side reuse filling
  */
 UCLASS(Blueprintable, EditInlineNew)
-class TOURSIM_API UMassAgentSpawnDataGenerator final : public UMassEntitySpawnDataGeneratorBase
+class TOURSIM_API UTourSimSpawnDataGenerator final : public UMassEntitySpawnDataGeneratorBase
 {
 	GENERATED_BODY()
 	

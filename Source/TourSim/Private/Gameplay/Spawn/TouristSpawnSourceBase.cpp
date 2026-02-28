@@ -1,7 +1,7 @@
 ﻿// © 2026 Denis Sviridov. MIT License.
 
 
-#include "Gameplay/Spawn/AgentSpawnSourceBase.h"
+#include "Gameplay/Spawn/TouristSpawnSourceBase.h"
 
 #include "Components/BoxComponent.h"
 #include "Gameplay/Spawn/TourSimSpawnLog.h"
@@ -10,7 +10,7 @@
 
 DEFINE_LOG_CATEGORY(LogTourSimSpawn);
 
-AAgentSpawnSourceBase::AAgentSpawnSourceBase()
+ATouristSpawnSourceBase::ATouristSpawnSourceBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	
@@ -21,7 +21,7 @@ AAgentSpawnSourceBase::AAgentSpawnSourceBase()
 	SpawnArea->SetBoxExtent(FVector(200.f, 200.f, 100.f));
 }
 
-void AAgentSpawnSourceBase::BeginPlay()
+void ATouristSpawnSourceBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -36,7 +36,7 @@ void AAgentSpawnSourceBase::BeginPlay()
 	}
 }
 
-void AAgentSpawnSourceBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void ATouristSpawnSourceBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (UTourSimSpawnSubsystem* Subsys = GetWorld()->GetSubsystem<UTourSimSpawnSubsystem>())
 	{
@@ -50,7 +50,7 @@ void AAgentSpawnSourceBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void AAgentSpawnSourceBase::AccumulateDemand(const float DeltaSeconds)
+void ATouristSpawnSourceBase::AccumulateDemand(const float DeltaSeconds)
 {
 	TokenBucket.Refill(DeltaSeconds);
 	
@@ -67,7 +67,7 @@ void AAgentSpawnSourceBase::AccumulateDemand(const float DeltaSeconds)
 	}
 }
 
-int32 AAgentSpawnSourceBase::ComputeSpawnQuota(const int32 GlobalBudget)
+int32 ATouristSpawnSourceBase::ComputeSpawnQuota(const int32 GlobalBudget)
 {
 	if (GlobalBudget <= 0)
 	{
@@ -80,7 +80,7 @@ int32 AAgentSpawnSourceBase::ComputeSpawnQuota(const int32 GlobalBudget)
 	return FMath::Min(AllowedByTick, GlobalBudget);
 }
 
-bool AAgentSpawnSourceBase::TryConsumeOne()
+bool ATouristSpawnSourceBase::TryConsumeOne()
 {
 	if (PendingQueue >= 1.0f)
 	{
@@ -90,7 +90,7 @@ bool AAgentSpawnSourceBase::TryConsumeOne()
 	return false;
 }
 
-bool AAgentSpawnSourceBase::GetCandidateTransform(FTransform& OutTransform) const
+bool ATouristSpawnSourceBase::GetCandidateTransform(FTransform& OutTransform) const
 {
 	if (!SpawnArea)
 	{

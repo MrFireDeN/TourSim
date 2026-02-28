@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "MassEntityTypes.h"
-#include "AgentAppearanceFragment.generated.h"
+#include "TouristAppearanceFragment.generated.h"
 
 
 USTRUCT(BlueprintType)
-struct FAgentAppearanceFragment : public FMassFragment
+struct FTouristAppearanceFragment : public FMassFragment
 {
 	GENERATED_BODY()
 	

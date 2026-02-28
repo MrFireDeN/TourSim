@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "MassEntityTraitBase.h"
-#include "AgentAppearanceFragment.h"
-#include "AgentAppearanceTrait.generated.h"
+#include "TouristAppearanceFragment.h"
+#include "TouristAppearanceTrait.generated.h"
 
 
 UCLASS()
-class TOURSIM_API UAgentAppearanceTrait : public UMassEntityTraitBase
+class TOURSIM_API UTouristAppearanceTrait : public UMassEntityTraitBase
 {
 	GENERATED_BODY()
 	

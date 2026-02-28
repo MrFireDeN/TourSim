@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MassEntityTypes.h"
-#include "Gameplay/Spawn/AgentSpawnSourceBase.h"
+#include "Gameplay/Spawn/TouristSpawnSourceBase.h"
 #include "TouristSpawnSource.generated.h"
 
 /**

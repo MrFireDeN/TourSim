@@ -3,21 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MassObserverProcessor.h"
-#include "AgentAppearanceFragment.h"
-#include "AgentAppearanceInitProcessor.generated.h"
+#include "MassProcessor.h"
+#include "TouristAppearanceFragment.h"
+#include "TouristAppearanceAppliedFragment.h"
+#include "TouristApplyAppearanceProcessor.generated.h"
 
 
-class UMassEntitySubsystem;
-
-UCLASS(BlueprintType)
-class TOURSIM_API UAgentAppearanceInitProcessor : public UMassObserverProcessor
+UCLASS()
+class TOURSIM_API UTouristApplyAppearanceProcessor : public UMassProcessor
 {
 	GENERATED_BODY()
 	
 public:
-	UAgentAppearanceInitProcessor();
-	
+	UTouristApplyAppearanceProcessor();
+
 protected:
 	virtual void ConfigureQueries() override;
 	virtual void Execute(FMassEntityManager& EntityManager, FMassExecutionContext& Context) override;

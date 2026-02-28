@@ -6,13 +6,13 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "TourSimSpawnSubsystem.generated.h"
 
-class AAgentSpawnSourceBase;
+class ATouristSpawnSourceBase;
 
 /**
  * Represents a planned spawn allocation for a specific source.
  *
  * Produced by UTourSimSpawnSubsystem and consumed by
- * UMassAgentSpawnDataGenerator during spawn data generation.
+ * UTourSimSpawnDataGenerator during spawn data generation.
  */
 USTRUCT(BlueprintType)
 struct FSpawnRequest
@@ -20,7 +20,7 @@ struct FSpawnRequest
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TWeakObjectPtr<AAgentSpawnSourceBase> Source;
+	TWeakObjectPtr<ATouristSpawnSourceBase> Source;
 
 	UPROPERTY()
 	int32 Count = 0;
@@ -52,8 +52,8 @@ public:
 	virtual TStatId GetStatId() const override { RETURN_QUICK_DECLARE_CYCLE_STAT(UTourSimSpawnSubsystem, STATGROUP_Tickables); }
 	virtual bool IsTickable() const override { return true; }
 	
-	void RegisterSource(AAgentSpawnSourceBase* Source);
-	void UnregisterSource(AAgentSpawnSourceBase* Source);
+	void RegisterSource(ATouristSpawnSourceBase* Source);
+	void UnregisterSource(ATouristSpawnSourceBase* Source);
 
 	void BuildSpawnRequests(TArray<FSpawnRequest>& OutRequests);
 	
@@ -64,7 +64,7 @@ private:
 	UPROPERTY(EditAnywhere, Category="Spawn|Budget")
 	int32 GlobalMaxSpawnPerTick = 50;
 
-	TArray<TWeakObjectPtr<AAgentSpawnSourceBase>> Sources;
+	TArray<TWeakObjectPtr<ATouristSpawnSourceBase>> Sources;
 	TArray<FSpawnRequest> CachedRequests;
 
 	int32 RoundRobinIndex = 0;

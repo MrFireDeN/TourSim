@@ -12,7 +12,7 @@
  * This payload is embedded into FMassEntitySpawnDataGeneratorResult::SpawnData via FInstancedStruct.
  */
 USTRUCT()
-struct FTourSimSpawnTransformData
+struct FTourSimSpawnData
 {
 	GENERATED_BODY()
 

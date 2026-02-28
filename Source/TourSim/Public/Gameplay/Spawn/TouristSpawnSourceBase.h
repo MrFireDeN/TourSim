@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "AgentSpawnSourceBase.generated.h"
+#include "TouristSpawnSourceBase.generated.h"
 
 
 class UBoxComponent;
@@ -71,15 +71,15 @@ struct FSpawnTokenBucket
  * - Perform navigation or collision validation
  *
  * Validation and actual entity creation are handled by
- * UMassAgentSpawnDataGenerator and MassSpawner pipeline.
+ * UTourSimSpawnDataGenerator and MassSpawner pipeline.
  */
 UCLASS(Abstract, BlueprintType, Blueprintable)
-class TOURSIM_API AAgentSpawnSourceBase : public AActor
+class TOURSIM_API ATouristSpawnSourceBase : public AActor
 {
 	GENERATED_BODY()
 
 public:
-	AAgentSpawnSourceBase();
+	ATouristSpawnSourceBase();
 	
 protected:
 	virtual void BeginPlay() override;

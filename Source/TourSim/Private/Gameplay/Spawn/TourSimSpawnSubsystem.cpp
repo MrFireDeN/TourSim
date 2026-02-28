@@ -3,7 +3,7 @@
 
 #include "Gameplay/Spawn/TourSimSpawnSubsystem.h"
 
-#include "Gameplay/Spawn/AgentSpawnSourceBase.h"
+#include "Gameplay/Spawn/TouristSpawnSourceBase.h"
 #include "Gameplay/Spawn/TourSimSpawnLog.h"
 
 void UTourSimSpawnSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -28,9 +28,9 @@ void UTourSimSpawnSubsystem::Tick(float DeltaTime)
 	CompactSources();
 	
 	// 1) Each source accumulates demand (λ -> queue)
-	for (TWeakObjectPtr<AAgentSpawnSourceBase>& WeakSrc : Sources)
+	for (TWeakObjectPtr<ATouristSpawnSourceBase>& WeakSrc : Sources)
 	{
-		if (AAgentSpawnSourceBase* Src = WeakSrc.Get())
+		if (ATouristSpawnSourceBase* Src = WeakSrc.Get())
 		{
 			Src->AccumulateDemand(DeltaTime);
 		}
@@ -46,7 +46,7 @@ void UTourSimSpawnSubsystem::Tick(float DeltaTime)
 		return;
 	}
 
-	TMap<TWeakObjectPtr<AAgentSpawnSourceBase>, int32> AllocatedPerSource;
+	TMap<TWeakObjectPtr<ATouristSpawnSourceBase>, int32> AllocatedPerSource;
 	
 	int32 SafetyCounter = 0;
 	const int32 SafetyMax = NumSources * 16; // prevents infinite loops if quotas misbehave
@@ -58,7 +58,7 @@ void UTourSimSpawnSubsystem::Tick(float DeltaTime)
 		for (int32 Step = 0; Step < NumSources && BudgetLeft > 0; ++Step)
 		{
 			const int32 Index = (RoundRobinIndex + Step) % NumSources;
-			AAgentSpawnSourceBase* Src = Sources[Index].Get();
+			ATouristSpawnSourceBase* Src = Sources[Index].Get();
 			if (!IsValid(Src))
 			{
 				continue;
@@ -83,7 +83,7 @@ void UTourSimSpawnSubsystem::Tick(float DeltaTime)
 		}
 	}
 	
-	for (const TPair<TWeakObjectPtr<AAgentSpawnSourceBase>, int32>& Kvp : AllocatedPerSource)
+	for (const TPair<TWeakObjectPtr<ATouristSpawnSourceBase>, int32>& Kvp : AllocatedPerSource)
 	{
 		if (!Kvp.Key.IsValid() || Kvp.Value <= 0)
 		{
@@ -104,7 +104,7 @@ void UTourSimSpawnSubsystem::Tick(float DeltaTime)
 
 	for (const FSpawnRequest& Req : CachedRequests)
 	{
-		if (AAgentSpawnSourceBase* Src = Req.Source.Get())
+		if (ATouristSpawnSourceBase* Src = Req.Source.Get())
 		{
 			UE_LOG(LogTourSimSpawn, Warning,
 				TEXT("   -> %s  Count=%d  PendingQueue=%.2f"),
@@ -115,14 +115,14 @@ void UTourSimSpawnSubsystem::Tick(float DeltaTime)
 	}
 }
 
-void UTourSimSpawnSubsystem::RegisterSource(AAgentSpawnSourceBase* Source)
+void UTourSimSpawnSubsystem::RegisterSource(ATouristSpawnSourceBase* Source)
 {
 	if (!IsValid(Source))
 	{
 		return;
 	}
 	
-	for (const TWeakObjectPtr<AAgentSpawnSourceBase>& It : Sources)
+	for (const TWeakObjectPtr<ATouristSpawnSourceBase>& It : Sources)
 	{
 		if (It.Get() == Source)
 		{
@@ -133,14 +133,14 @@ void UTourSimSpawnSubsystem::RegisterSource(AAgentSpawnSourceBase* Source)
 	Sources.Add(Source);
 }
 
-void UTourSimSpawnSubsystem::UnregisterSource(AAgentSpawnSourceBase* Source)
+void UTourSimSpawnSubsystem::UnregisterSource(ATouristSpawnSourceBase* Source)
 {
 	if (!IsValid(Source))
 	{
 		return;
 	}
 	
-	Sources.RemoveAll([Source](const TWeakObjectPtr<AAgentSpawnSourceBase>& It)
+	Sources.RemoveAll([Source](const TWeakObjectPtr<ATouristSpawnSourceBase>& It)
 	{
 		return !It.IsValid() || It.Get() == Source;
 	});
@@ -163,7 +163,7 @@ void UTourSimSpawnSubsystem::BuildSpawnRequests(TArray<FSpawnRequest>& OutReques
 
 void UTourSimSpawnSubsystem::CompactSources()
 {
-	Sources.RemoveAll([](const TWeakObjectPtr<AAgentSpawnSourceBase>& It)
+	Sources.RemoveAll([](const TWeakObjectPtr<ATouristSpawnSourceBase>& It)
 	{
 		return !It.IsValid();
 	});

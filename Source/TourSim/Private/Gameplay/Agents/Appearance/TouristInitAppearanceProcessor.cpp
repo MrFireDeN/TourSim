@@ -1,13 +1,13 @@
 ﻿// © 2026 Denis Sviridov. MIT License.
 
-#include "Gameplay/Agents/Appearance/AgentAppearanceInitProcessor.h"
+#include "Gameplay/Agents/Appearance/TouristInitAppearanceProcessor.h"
 #include "MassCommonFragments.h"
 #include "MassEntityQuery.h"
 #include "MassExecutionContext.h"
 
-UAgentAppearanceInitProcessor::UAgentAppearanceInitProcessor()
+UTouristInitAppearanceProcessor::UTouristInitAppearanceProcessor()
 {
-	ObservedType = FAgentAppearanceFragment::StaticStruct();
+	ObservedType = FTouristAppearanceFragment::StaticStruct();
 	Operation = EMassObservedOperation::Add;
 	
 	ExecutionFlags = (int32)EProcessorExecutionFlags::All;
@@ -15,9 +15,9 @@ UAgentAppearanceInitProcessor::UAgentAppearanceInitProcessor()
 	ProcessingPhase = EMassProcessingPhase::PrePhysics;
 }
 
-void UAgentAppearanceInitProcessor::ConfigureQueries()
+void UTouristInitAppearanceProcessor::ConfigureQueries()
 {
-	EntityQuery.AddRequirement<FAgentAppearanceFragment>(EMassFragmentAccess::ReadWrite);
+	EntityQuery.AddRequirement<FTouristAppearanceFragment>(EMassFragmentAccess::ReadWrite);
 	EntityQuery.RegisterWithProcessor(*this);
 }
 
@@ -27,13 +27,13 @@ static inline FLinearColor RandomColor(FRandomStream& Stream)
 	return FLinearColor(Stream.FRand(), Stream.FRand(), Stream.FRand(), 1.f);
 }
 
-void UAgentAppearanceInitProcessor::Execute(FMassEntityManager& EntityManager, FMassExecutionContext& Context)
+void UTouristInitAppearanceProcessor::Execute(FMassEntityManager& EntityManager, FMassExecutionContext& Context)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Appearance init running")); 
 	
 	EntityQuery.ForEachEntityChunk(EntityManager, Context, [&](FMassExecutionContext& Ctx)
 	{
-		auto Appearances = Ctx.GetMutableFragmentView<FAgentAppearanceFragment>();
+		auto Appearances = Ctx.GetMutableFragmentView<FTouristAppearanceFragment>();
 
 		for (int32 i = 0; i < Ctx.GetNumEntities(); ++i)
 		{

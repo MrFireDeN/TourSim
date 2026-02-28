@@ -1,15 +1,15 @@
 ﻿// © 2026 Denis Sviridov. MIT License.
 
 
-#include "Gameplay/Spawn/MassAgentSpawnDataGenerator.h"
+#include "Gameplay/Spawn/TourSimSpawnDataGenerator.h"
 
 #include "MassEntityConfigAsset.h"
 #include "MassSpawnLocationProcessor.h"
-#include "Gameplay/Spawn/AgentSpawnSourceBase.h"
+#include "Gameplay/Spawn/TouristSpawnSourceBase.h"
 #include "Gameplay/Spawn/TourSimSpawnLog.h"
 #include "Gameplay/Spawn/TourSimSpawnSubsystem.h"
 
-void UMassAgentSpawnDataGenerator::Generate(
+void UTourSimSpawnDataGenerator::Generate(
 	UObject& QueryOwner, 
 	TConstArrayView<FMassSpawnedEntityType> EntityTypes,
 	int32 Count, 
@@ -117,7 +117,7 @@ void UMassAgentSpawnDataGenerator::Generate(
 		while (RequestIndex < Requests.Num())
 		{
 			FSpawnRequest& Request = Requests[RequestIndex];
-			AAgentSpawnSourceBase* Source = Request.Source.Get();
+			ATouristSpawnSourceBase* Source = Request.Source.Get();
 
 			if (!IsValid(Source) || Request.Count <= 0)
 			{
@@ -208,12 +208,12 @@ void UMassAgentSpawnDataGenerator::Generate(
 	FinishedGeneratingSpawnPointsDelegate.ExecuteIfBound(Results);
 }
 
-bool UMassAgentSpawnDataGenerator::TryBuildValidatedTransform(UWorld& World, UObject& QueryOwner, AActor* SourceActor,
+bool UTourSimSpawnDataGenerator::TryBuildValidatedTransform(UWorld& World, UObject& QueryOwner, AActor* SourceActor,
 	FTransform& OutTransform) const
 {
-	AAgentSpawnSourceBase* Source = Cast<AAgentSpawnSourceBase>(SourceActor);
+	ATouristSpawnSourceBase* Source = Cast<ATouristSpawnSourceBase>(SourceActor);
 	
-	if (!Cast<AAgentSpawnSourceBase>(SourceActor))
+	if (!Cast<ATouristSpawnSourceBase>(SourceActor))
 	{
 		return false;
 	}
@@ -242,10 +242,10 @@ bool UMassAgentSpawnDataGenerator::TryBuildValidatedTransform(UWorld& World, UOb
 	return false;
 }
 
-bool UMassAgentSpawnDataGenerator::ValidatePoint(UWorld& World, UObject& QueryOwner, AActor* SourceActor,
+bool UTourSimSpawnDataGenerator::ValidatePoint(UWorld& World, UObject& QueryOwner, AActor* SourceActor,
 	FTransform& InOutTransform) const
 {
-	AAgentSpawnSourceBase* Source = Cast<AAgentSpawnSourceBase>(SourceActor);
+	ATouristSpawnSourceBase* Source = Cast<ATouristSpawnSourceBase>(SourceActor);
 	if (!IsValid(Source))
 	{
 		return false;
@@ -277,7 +277,7 @@ bool UMassAgentSpawnDataGenerator::ValidatePoint(UWorld& World, UObject& QueryOw
 	return false;
 }
 
-bool UMassAgentSpawnDataGenerator::CapsuleOverlapTest(UWorld& World, const FTransform& Transform, UObject& QueryOwner,
+bool UTourSimSpawnDataGenerator::CapsuleOverlapTest(UWorld& World, const FTransform& Transform, UObject& QueryOwner,
 	AActor* SourceActor) const
 {
 	const FCollisionShape Capsule = FCollisionShape::MakeCapsule(CapsuleRadius, CapsuleHalfHeight);
