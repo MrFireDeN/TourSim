@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "MassEntityTypes.h"
 #include "TouristNamePoolDataAsset.h"
-#include "TouristSpawnSource.h"
+#include "TouristSpawnSourceFragment.h"
 #include "TouristConfigSharedFragment.generated.h"
 
 /**
@@ -19,16 +19,28 @@ struct FTouristSpawnProfile
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TourSim|Profile")
-	float WBench = 0.33f;
+	float WBenchMin = 0.33f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TourSim|Profile")
+	float WBenchMax = 0.33f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TourSim|Profile")
-	float WMonument = 0.33f;
+	float WMonumentMin = 0.33f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TourSim|Profile")
+	float WMonumentMax = 0.33f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TourSim|Profile")
-	float WFastFood = 0.34f;
+	float WFastFoodMin = 0.34f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TourSim|Profile")
+	float WFastFoodMax = 0.34f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TourSim|Profile", meta=(ClampMin="0.0", ClampMax="1.0"))
-	float PriceSensitivity = 0.5f;
+	float PriceSensitivityMin = 0.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TourSim|Profile", meta=(ClampMin="0.0", ClampMax="1.0"))
+	float PriceSensitivityMax = 0.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TourSim|Profile")
 	bool bRandomizeWeights = true;

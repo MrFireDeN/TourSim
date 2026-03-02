@@ -4,6 +4,7 @@
 #include "Gameplay/Agents/Preferences/TouristNamePoolSubsystem.h"
 
 #include "Gameplay/Agents/Preferences/TouristNamePoolDataAsset.h"
+#include "Gameplay/Spawn/TourSimSpawnLog.h"
 
 void UTouristNamePoolSubsystem::RegisterPool(FName PoolId, TSoftObjectPtr<UTouristNamePoolDataAsset> PoolAsset)
 {
@@ -60,6 +61,7 @@ bool UTouristNamePoolSubsystem::TryGetName(FName PoolId, int32 NameIndex, FStrin
 	const TObjectPtr<UTouristNamePoolDataAsset>* Pool = LoadedPools.Find(PoolId);
 	if (!Pool || !(*Pool))
 	{
+		UE_LOG(LogTourSimSpawn, Error, TEXT("TryGetName: Fail to load Pool"));
 		return false;
 	}
 

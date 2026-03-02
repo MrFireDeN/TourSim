@@ -5,14 +5,14 @@
 #include "CoreMinimal.h"
 #include "MassEntityTypes.h"
 #include "Gameplay/Spawn/TouristSpawnSourceBase.h"
-#include "TouristSpawnSource.generated.h"
+#include "TouristSpawnSourceFragment.generated.h"
 
 /**
  * Fragment that marks which spawn source produced this agent.
  * Must be set by spawning logic before init-tag is added.
  */
 USTRUCT(BlueprintType)
-struct FAgentSpawnSourceFragment final : public FMassFragment
+struct FTouristSpawnSourceFragment final : public FMassFragment
 {
 	GENERATED_BODY()
 

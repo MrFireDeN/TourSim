@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TouristSpawnSourceBase.h"
 #include "TourSimSpawnData.generated.h"
 
 /**
@@ -16,7 +17,12 @@ struct FTourSimSpawnData
 {
 	GENERATED_BODY()
 
-	/** Per-entity spawn transforms. Size must be equal to FMassEntitySpawnDataGeneratorResult::NumEntities. */
 	UPROPERTY()
 	TArray<FTransform> Transforms;
+	
+	UPROPERTY()
+	TArray<ESpawnSourceType> SourceTypes;
+	
+	UPROPERTY()
+	bool bRandomize;
 };

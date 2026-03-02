@@ -8,7 +8,7 @@
 #include "TouristPreferencesFragment.h"
 #include "TouristStateFragment.h"
 #include "TouristIdentityFragment.h"
-#include "TouristSpawnSource.h"
+#include "TouristSpawnSourceFragment.h"
 #include "TouristConfigSharedFragment.h"
 #include "TouristTrait.generated.h"
 

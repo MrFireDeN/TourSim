@@ -9,7 +9,7 @@
 
 void UTouristTrait::BuildTemplate(FMassEntityTemplateBuildContext& BuildContext, const UWorld& World) const
 {
-	BuildContext.AddFragment<FAgentSpawnSourceFragment>();
+	BuildContext.AddFragment<FTouristSpawnSourceFragment>();
 	BuildContext.AddFragment<FTouristPreferencesFragment>();
 	BuildContext.AddFragment<FTouristStateFragment>();
 	BuildContext.AddFragment<FTouristIdentityFragment>();

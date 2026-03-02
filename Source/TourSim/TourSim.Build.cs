@@ -18,18 +18,18 @@ public class TourSim : ModuleRules
 			// UI
 			"UMG",
 			
-			// AI
-			"AIModule",
-			"NavigationSystem",
-			"MassEntity",       
+			// Mass
+			"MassEntity",
+			"MassCommon",
 			"MassCrowd",        
 			"MassActors",       
-			"MassMovement",     
-			"MassReplication",  
-			"MassSimulation",   
+			"MassMovement",   
 			"MassSpawner",      
 			"MassLOD",          
 			"MassRepresentation",
+			
+			// Utils
+			"StructUtils",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

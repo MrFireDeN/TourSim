@@ -3,10 +3,14 @@
 
 #include "Gameplay/Spawn/TourSimSpawnDataGenerator.h"
 
+#include "GameplayEffectAttributeCaptureDefinition.h"
 #include "MassEntityConfigAsset.h"
 #include "MassSpawnLocationProcessor.h"
+#include "Gameplay/Agents/Preferences/TouristInitPostSpawnProcessor.h"
 #include "Gameplay/Spawn/TouristSpawnSourceBase.h"
+#include "Gameplay/Spawn/TourSimSpawnData.h"
 #include "Gameplay/Spawn/TourSimSpawnLog.h"
+#include "Gameplay/Spawn/TourSimSpawnProcessor.h"
 #include "Gameplay/Spawn/TourSimSpawnSubsystem.h"
 
 void UTourSimSpawnDataGenerator::Generate(
@@ -87,7 +91,7 @@ void UTourSimSpawnDataGenerator::Generate(
 	struct FSliceBuild
 	{
 		FMassEntitySpawnDataGeneratorResult* Result = nullptr;
-		FMassTransformsSpawnData SpawnData;
+		FTourSimSpawnData SpawnData;
 		int32 Remaining = 0;
 	};
 
@@ -107,12 +111,13 @@ void UTourSimSpawnDataGenerator::Generate(
 
 		S.SpawnData.bRandomize = bRandomizeOutputTransforms;
 		S.SpawnData.Transforms.Reserve(R.NumEntities);
+		S.SpawnData.SourceTypes.Reserve(R.NumEntities);
 	}
 
 	// Итератор по Requests: достаём валидные точки из источников
 	int32 RequestIndex = 0;
 
-	auto TryPullOneTransform = [&](FTransform& OutXform) -> bool
+	auto TryPullOneTransform = [&](FTransform& OutXform, ESpawnSourceType& OutSourceType) -> bool
 	{
 		while (RequestIndex < Requests.Num())
 		{
@@ -142,15 +147,12 @@ void UTourSimSpawnDataGenerator::Generate(
 
 			Request.Count -= 1;
 			OutXform = Xform;
+			OutSourceType = Source->GetSourceType();
 			return true;
 		}
 
 		return false;
 	};
-
-	// Round-robin раздача точек по типам (гарантирует присутствие обоих, если хотя бы 2 точки есть)
-	const TSubclassOf<UMassProcessor> ProcessorClass =
-		SpawnDataProcessorClass ? *SpawnDataProcessorClass : UMassSpawnLocationProcessor::StaticClass();
 
 	int32 Safety = 0;
 	const int32 SafetyMax = AllowedCount * 4;
@@ -171,15 +173,16 @@ void UTourSimSpawnDataGenerator::Generate(
 			bAnyRemaining = true;
 
 			FTransform Xform;
-			if (!TryPullOneTransform(Xform))
+			ESpawnSourceType SourceType = ESpawnSourceType::Custom;
+			if (!TryPullOneTransform(Xform, SourceType))
 			{
-				// точек больше нет вообще
 				SliceIndex = (SliceIndex + Iter) % Slices.Num();
 				Safety = SafetyMax; // break outer
 				break;
 			}
 
 			S.SpawnData.Transforms.Add(Xform);
+			S.SpawnData.SourceTypes.Add(SourceType);
 			S.Remaining -= 1;
 		}
 
@@ -199,9 +202,12 @@ void UTourSimSpawnDataGenerator::Generate(
 		S.Result->NumEntities = Produced;
 		if (Produced > 0)
 		{
-			S.Result->SpawnDataProcessor = ProcessorClass;
+			S.Result->SpawnDataProcessor = UTourSimSpawnProcessor::StaticClass();
+			
 			S.Result->PostSpawnProcessors.Reset();
-			S.Result->SpawnData = FInstancedStruct::Make<FMassTransformsSpawnData>(MoveTemp(S.SpawnData));
+			S.Result->PostSpawnProcessors.Add(UTouristInitPostSpawnProcessor::StaticClass());
+			
+			S.Result->SpawnData = FInstancedStruct::Make<FTourSimSpawnData>(MoveTemp(S.SpawnData));
 		}
 	}
 
