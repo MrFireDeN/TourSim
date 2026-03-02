@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "MassEntityTypes.h"
-#include "TouristNamePoolDataAsset.h"
 #include "TouristSpawnSourceFragment.h"
 #include "TouristConfigSharedFragment.generated.h"
 
@@ -72,7 +71,6 @@ public:
 
 /**
  * Const shared fragment that carries archetype-level configuration for tourist initialization:
- * - which name pool to use (PoolId + SoftAsset)
  * - spawn-source-dependent sampling profiles
  *
  * Stored as const shared fragment so processors can access it from an entity chunk.
@@ -83,9 +81,6 @@ struct FTouristConfigSharedFragment final : public FMassConstSharedFragment
 	GENERATED_BODY()
 
 public:
-	FName NamePoolId = NAME_None;
-	TSoftObjectPtr<UTouristNamePoolDataAsset> NamePoolAsset;
-
 	FTouristSpawnProfile DefaultProfile;
 	FTouristSpawnProfile BusStopProfile;
 	FTouristSpawnProfile ParkingProfile;

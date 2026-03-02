@@ -15,8 +15,6 @@ void UTouristTrait::BuildTemplate(FMassEntityTemplateBuildContext& BuildContext,
 	BuildContext.AddFragment<FTouristIdentityFragment>();
 
 	FTouristConfigSharedFragment Config;
-	Config.NamePoolId      = NamePoolId;
-	Config.NamePoolAsset   = NamePoolAsset;
 	Config.DefaultProfile  = DefaultProfile;
 	Config.BusStopProfile  = BusStopProfile;
 	Config.ParkingProfile  = ParkingProfile;

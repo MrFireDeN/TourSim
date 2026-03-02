@@ -28,14 +28,6 @@ class TOURSIM_API UTouristTrait final : public UMassEntityTraitBase
 	GENERATED_BODY()
 	
 public:
-	/** Name pool id used to resolve names in UTouristNamePoolSubsystem. */
-	UPROPERTY(EditAnywhere, Category="TourSim|Names")
-	FName NamePoolId = TEXT("Default");
-
-	/** Soft reference to a name pool asset; registered/loaded by UTouristNamePoolSubsystem on demand. */
-	UPROPERTY(EditAnywhere, Category="TourSim|Names")
-	TSoftObjectPtr<UTouristNamePoolDataAsset> NamePoolAsset;
-	
 	UPROPERTY(EditAnywhere, Category="TourSim|Profiles")
 	FTouristSpawnProfile DefaultProfile;
 

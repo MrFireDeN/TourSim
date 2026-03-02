@@ -138,9 +138,9 @@ void UTouristInitPostSpawnProcessor::Execute(FMassEntityManager& EntityManager, 
 			
 			Id[i].ShortId = TourSim::MakeShortId(Seed);
 			
-			if (NameSubsystem && !Config.NamePoolId.IsNone())
+			if (NameSubsystem)
 			{
-				const int32 PoolSize = NameSubsystem->GetPoolSize(Config.NamePoolId);
+				const int32 PoolSize = NameSubsystem->GetNamesNum();
 				Id[i].NameIndex = (PoolSize > 0) ? static_cast<int32>(Seed % PoolSize) : -1;
 			}
 			else

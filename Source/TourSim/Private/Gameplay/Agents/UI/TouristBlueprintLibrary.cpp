@@ -121,23 +121,18 @@ bool UTouristBlueprintLibrary::BuildSnapshot(
 	OutSnapshot.SpawnSource = static_cast<uint8>(Source->Source);
 	
 	FString BaseName;
+
+	UTouristNamePoolSubsystem* NameSubsystem = World->GetSubsystem<UTouristNamePoolSubsystem>();
 	
-	if (!World)
+	UE_LOG(LogTemp, Error, TEXT("Name Subsystem = %s"), NameSubsystem ? *NameSubsystem->GetName() : TEXT("False"));
+	
+	if (NameSubsystem && NameSubsystem->TryGetName(Identity->NameIndex, BaseName))
 	{
-		UTouristNamePoolSubsystem* NameSubsystem = World->GetSubsystem<UTouristNamePoolSubsystem>();
-		
-		if (NameSubsystem && NameSubsystem->TryGetName(Config->NamePoolId, Identity->NameIndex, BaseName))
-		{
-			OutSnapshot.DisplayName = BaseName + TEXT(" #") + FString::Printf(TEXT(" #%06X"), Identity->ShortId);
-		}
-		else
-		{
-			// Fallback if name pool missing or index invalid
-			OutSnapshot.DisplayName = TEXT("Tourist #") + FString::Printf(TEXT("%06X"), Identity->ShortId);
-		}
+		OutSnapshot.DisplayName = BaseName + TEXT(" #") + FString::Printf(TEXT("%06X"), Identity->ShortId);
 	}
 	else
 	{
+		// Fallback if name pool missing or index invalid
 		OutSnapshot.DisplayName = TEXT("Tourist #") + FString::Printf(TEXT("%06X"), Identity->ShortId);
 	}
 	
