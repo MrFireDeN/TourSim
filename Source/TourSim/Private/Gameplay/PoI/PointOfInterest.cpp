@@ -2,54 +2,52 @@
 
 
 #include "Gameplay/PoI/PointOfInterest.h"
-#include "Gameplay/PoI/PointOfInterest.h"
-
-#include "MassEntityTypes.h"
-#include "Components/BoxComponent.h"
-#include "Components/WidgetComponent.h"
-#include "Gameplay/PoI/PoiDataComponent.h"
+#include "Components/BillboardComponent.h"
+#include "Components/SphereComponent.h"
+#include "Gameplay/PoI/PoiRecord.h"
 
 
 APointOfInterest::APointOfInterest()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	
 	RootComponent = CreateDefaultSubobject<USceneComponent>("RootComponent");
 	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	Mesh->SetupAttachment(RootComponent);
 	
-	InfoWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("InfoWidgetComponent");
-	InfoWidgetComponent->SetupAttachment(RootComponent);
-	
-	InteractionVolume = CreateDefaultSubobject<UBoxComponent>("InteractionVolume");
+	InteractionVolume = CreateDefaultSubobject<USphereComponent>("InteractionVolume");
 	InteractionVolume->SetupAttachment(RootComponent);
 	
-	DataComponent = CreateDefaultSubobject<UPoiDataComponent>("DataComponent");
+	InteractionVolume->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	InteractionVolume->SetGenerateOverlapEvents(false);
 	
-	// MassAgentSubsystem = CreateDefaultSubobject<UMassAgentSubsystem>("");
+#if WITH_EDITORONLY_DATA
+	Billboard = CreateDefaultSubobject<UBillboardComponent>(TEXT("Billboard"));
+	Billboard->SetupAttachment(RootComponent);
+#endif
 }
 
-void APointOfInterest::BeginPlay()
+FPoiRecord APointOfInterest::BuildPoiRecord(const int32 InId) const
 {
-	Super::BeginPlay();
-	
+	FPoiRecord Record;
+	Record.Id = InId;
+	Record.Type = Type;
+	Record.Location = GetActorLocation();
+	Record.InteractionRadius = FMath::Max(0.0f, InteractionVolume->GetScaledSphereRadius());
+	Record.PriceCents = FMath::Max(0, PriceCents);
+	Record.Capacity = FMath::Max(1, Capacity);
+	Record.TouristCount = FMath::Clamp(TouristCount, 0, Record.Capacity);
+	Record.bEnabled = bEnabled;
+	return Record;
 }
 
-void APointOfInterest::Tick(float DeltaTime)
+bool APointOfInterest::IsAccessible() const
 {
-	Super::Tick(DeltaTime);
+	return bEnabled && TouristCount < Capacity;
 }
 
-void APointOfInterest::InitializeFromData(const FPoiConfiguration& Config)
+void APointOfInterest::SetTouristCount(const int32 InTouristCount)
 {
+	TouristCount = FMath::Clamp(InTouristCount, 0, Capacity);
 }
-
-void APointOfInterest::OnMassAgentArrived(FMassEntityHandle AgentHandle)
-{
-}
-
-void APointOfInterest::OnMassAgentDeparted(FMassEntityHandle AgentHandle)
-{
-}
-
