@@ -68,4 +68,6 @@ private:
 	TArray<FSpawnRequest> CachedRequests;
 
 	int32 RoundRobinIndex = 0;
+	
+	float NextNeedUpdateTime;
 };

@@ -28,4 +28,6 @@ protected:
 	
 private:
 	FMassEntityQuery EntityQuery;
+	
+	float NextNeedUpdateTime;
 };

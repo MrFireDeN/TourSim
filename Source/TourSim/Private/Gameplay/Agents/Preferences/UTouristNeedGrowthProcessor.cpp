@@ -23,6 +23,13 @@ void UUTouristNeedGrowthProcessor::ConfigureQueries()
 
 void UUTouristNeedGrowthProcessor::Execute(FMassEntityManager& EntityManager, FMassExecutionContext& Context)
 {
+	const float CurrentTime = Context.GetWorld()->TimeSeconds;
+	
+	if (CurrentTime < NextNeedUpdateTime)
+		return;
+	
+	NextNeedUpdateTime = CurrentTime + 0.5f;
+	
 	const float DeltaTime = Context.GetDeltaTimeSeconds();
 	
 	EntityQuery.ForEachEntityChunk(EntityManager, Context, [this, DeltaTime](FMassExecutionContext& ChunkContext)
