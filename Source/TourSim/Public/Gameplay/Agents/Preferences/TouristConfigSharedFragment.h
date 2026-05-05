@@ -75,13 +75,18 @@ public:
  *
  * Stored as const shared fragment so processors can access it from an entity chunk.
  */
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FTouristConfigSharedFragment final : public FMassConstSharedFragment
 {
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TourSim|Profile")
 	FTouristSpawnProfile DefaultProfile;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TourSim|Profile")
 	FTouristSpawnProfile BusStopProfile;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TourSim|Profile")
 	FTouristSpawnProfile ParkingProfile;
 };

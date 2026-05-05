@@ -30,6 +30,10 @@ public class TourSim : ModuleRules
 			
 			// Utils
 			"StructUtils",
+			"Json",
+			"JsonUtilities",
+			"DesktopPlatform",
+			"Slate",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
