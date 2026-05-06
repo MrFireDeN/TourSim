@@ -11,7 +11,7 @@
  *
  * Reads:
  *  - FTouristSpawnSourceFragment
- *  - FTouristConfigSharedFragment (const shared)
+ *  - FTouristConfigSharedFragment
  *
  * Writes:
  *  - FTouristPreferencesFragment

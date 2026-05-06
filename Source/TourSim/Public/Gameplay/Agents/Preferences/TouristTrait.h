@@ -26,16 +26,6 @@ UCLASS(DisplayName="Tourist Trait")
 class TOURSIM_API UTouristTrait final : public UMassEntityTraitBase
 {
 	GENERATED_BODY()
-	
-public:
-	UPROPERTY(EditAnywhere, Category="TourSim|Profiles")
-	FTouristSpawnProfile DefaultProfile;
-
-	UPROPERTY(EditAnywhere, Category="TourSim|Profiles")
-	FTouristSpawnProfile BusStopProfile;
-
-	UPROPERTY(EditAnywhere, Category="TourSim|Profiles")
-	FTouristSpawnProfile ParkingProfile;
 
 protected:
 	virtual void BuildTemplate(FMassEntityTemplateBuildContext& BuildContext, const UWorld& World) const override;

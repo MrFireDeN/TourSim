@@ -8,6 +8,7 @@
 #include "Gameplay/Agents/Preferences/TouristIdentityFragment.h"
 #include "Gameplay/Agents/Preferences/TouristNamePoolSubsystem.h"
 #include "Gameplay/Agents/Preferences/TouristPreferencesFragment.h"
+#include "Gameplay/Agents/Preferences/TouristSettingsSubsystem.h"
 #include "Gameplay/Agents/Preferences/TouristSpawnSourceFragment.h"
 #include "Gameplay/Agents/Preferences/TouristStateFragment.h"
 
@@ -51,9 +52,6 @@ void UTouristInitPostSpawnProcessor::ConfigureQueries()
 	EntityQuery.AddRequirement<FTouristPreferencesFragment>(EMassFragmentAccess::ReadWrite);
 	EntityQuery.AddRequirement<FTouristStateFragment>(EMassFragmentAccess::ReadWrite);
 	EntityQuery.AddRequirement<FTouristIdentityFragment>(EMassFragmentAccess::ReadWrite);
-
-	EntityQuery.AddConstSharedRequirement<FTouristConfigSharedFragment>(EMassFragmentPresence::All);
-
 }
 
 void UTouristInitPostSpawnProcessor::Execute(FMassEntityManager& EntityManager, FMassExecutionContext& Context)
@@ -64,13 +62,26 @@ void UTouristInitPostSpawnProcessor::Execute(FMassEntityManager& EntityManager, 
 		return;
 	}
 	
+	UGameInstance* GameInstance = World->GetGameInstance();
+	if (!GameInstance)
+	{
+		return;
+	}
+	
+	UTouristSettingsSubsystem* Settings = GameInstance->GetSubsystem<UTouristSettingsSubsystem>();
+	if (!Settings)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TouristInitPostSpawnProcessor: No TouristSettingsSubsystem found, using default empty config."));
+		return;
+	}
+	
+	const FTouristConfigSharedFragment& Config = 
+		Settings ? Settings->GetCurrentConfig() : FTouristConfigSharedFragment();
+	
 	UTouristNamePoolSubsystem* NameSubsystem = World->GetSubsystem<UTouristNamePoolSubsystem>();
 	
-	EntityQuery.ForEachEntityChunk(EntityManager, Context, [World, NameSubsystem](FMassExecutionContext& ExecCtx)
+	EntityQuery.ForEachEntityChunk(EntityManager, Context, [World, NameSubsystem, &Config](FMassExecutionContext& ExecCtx)
 	{
-		const FTouristConfigSharedFragment& Config = 
-			ExecCtx.GetConstSharedFragment<const FTouristConfigSharedFragment>();
-		
 		const int32 Num = ExecCtx.GetNumEntities();
 		
 		auto Sources = ExecCtx.GetFragmentView<FTouristSpawnSourceFragment>();

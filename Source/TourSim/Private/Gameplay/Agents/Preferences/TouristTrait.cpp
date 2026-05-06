@@ -13,12 +13,4 @@ void UTouristTrait::BuildTemplate(FMassEntityTemplateBuildContext& BuildContext,
 	BuildContext.AddFragment<FTouristPreferencesFragment>();
 	BuildContext.AddFragment<FTouristStateFragment>();
 	BuildContext.AddFragment<FTouristIdentityFragment>();
-
-	FTouristConfigSharedFragment Config;
-	Config.DefaultProfile  = DefaultProfile;
-	Config.BusStopProfile  = BusStopProfile;
-	Config.ParkingProfile  = ParkingProfile;
-
-	const FConstSharedStruct SharedConfig = FConstSharedStruct::Make(Config);
-	BuildContext.AddConstSharedFragment(SharedConfig);
 }

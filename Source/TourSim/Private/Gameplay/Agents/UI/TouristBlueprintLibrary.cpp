@@ -89,13 +89,6 @@ bool UTouristBlueprintLibrary::BuildSnapshot(
 	const FMassEntityHandle Entity,
 	FTouristSnapshot& OutSnapshot)
 {
-	const FTouristConfigSharedFragment* Config = 
-		EntityManager.GetConstSharedFragmentDataPtr<FTouristConfigSharedFragment>(Entity);
-	if (!Config)
-	{
-		return false;
-	}
-	
 	const FTouristPreferencesFragment* Prefs = EntityManager.GetFragmentDataPtr<FTouristPreferencesFragment>(Entity);
 	const FTouristStateFragment* State = EntityManager.GetFragmentDataPtr<FTouristStateFragment>(Entity);
 	const FTouristIdentityFragment* Identity = EntityManager.GetFragmentDataPtr<FTouristIdentityFragment>(Entity);
