@@ -1,12 +1,12 @@
 ﻿// © 2026 Denis Sviridov. MIT License.
 
 
-#include "Gameplay/Agents/Preferences/UTouristNeedGrowthProcessor.h"
+#include "Gameplay/Agents/Preferences/Processors/UTouristNeedGrowthProcessor.h"
 
 #include "MassAIBehaviorTypes.h"
 #include "MassExecutionContext.h"
-#include "Gameplay/Agents/Preferences/TouristPreferencesFragment.h"
-#include "Gameplay/Agents/Preferences/TouristStateFragment.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristPreferencesFragment.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristStateFragment.h"
 
 UUTouristNeedGrowthProcessor::UUTouristNeedGrowthProcessor()
 {

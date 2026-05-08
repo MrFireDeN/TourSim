@@ -1,11 +1,12 @@
 ﻿// © 2026 Denis Sviridov. MIT License.
 
 
-#include "Gameplay/Agents/Appearance/TouristApplyAppearanceProcessor.h"
+#include "Gameplay/Agents/Appearance/Processors/TouristApplyAppearanceProcessor.h"
 
 #include "MassActorSubsystem.h"
 #include "MassRepresentationFragments.h"
-#include "Gameplay/Agents/Appearance/TouristAppearanceFragment.h"
+#include "Gameplay/Agents/Appearance/Fragments/TouristAppearanceAppliedFragment.h"
+#include "Gameplay/Agents/Appearance/Fragments/TouristAppearanceFragment.h"
 
 static uint32 HashAppearance(const FTouristAppearanceFragment& A)
 {

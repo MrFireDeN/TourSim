@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "MassEntityTypes.h"
-#include "TouristIntent.h"
 #include "TouristStateFragment.generated.h"
 
 /**
@@ -31,12 +30,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TourSim|Economy", meta=(ClampMin="0"))
 	int32 SpentCents = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TourSim|Decision")
-	float NextDecisionTimeSeconds = 0.0f;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TourSim|Decision")
-	ETouristIntent CurrentIntent = ETouristIntent::None;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TourSim|Stats")
 	int32 BenchVisits = 0;

@@ -8,7 +8,7 @@
 #include "MassEntityManager.h"
 #include "MassExecutionContext.h"
 
-#include "Gameplay/Agents/Preferences/TouristSpawnSourceFragment.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristSpawnSourceFragment.h"
 #include "Gameplay/Spawn/TourSimSpawnData.h"
 
 void UTourSimSpawnProcessor::ConfigureQueries()

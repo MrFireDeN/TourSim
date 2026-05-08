@@ -1,7 +1,7 @@
 ﻿// © 2026 Denis Sviridov. MIT License.
 
 
-#include "Gameplay/Agents/Preferences/TouristNamePoolSubsystem.h"
+#include "Gameplay/Agents/Preferences/Subsystems/TouristNamePoolSubsystem.h"
 
 bool UTouristNamePoolSubsystem::TryGetName(int32 NameIndex, FString& OutName) const
 {

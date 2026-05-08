@@ -1,16 +1,16 @@
 ﻿// © 2026 Denis Sviridov. MIT License.
 
 
-#include "Gameplay/Agents/Preferences/TouristInitPostSpawnProcessor.h"
+#include "Gameplay/Agents/Preferences/Processors/TouristInitPostSpawnProcessor.h"
 
 #include "MassExecutionContext.h"
-#include "Gameplay/Agents/Preferences/TouristConfigSharedFragment.h"
-#include "Gameplay/Agents/Preferences/TouristIdentityFragment.h"
-#include "Gameplay/Agents/Preferences/TouristNamePoolSubsystem.h"
-#include "Gameplay/Agents/Preferences/TouristPreferencesFragment.h"
-#include "Gameplay/Agents/Preferences/TouristSettingsSubsystem.h"
-#include "Gameplay/Agents/Preferences/TouristSpawnSourceFragment.h"
-#include "Gameplay/Agents/Preferences/TouristStateFragment.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristConfigSharedFragment.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristIdentityFragment.h"
+#include "Gameplay/Agents/Preferences/Subsystems/TouristNamePoolSubsystem.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristPreferencesFragment.h"
+#include "Gameplay/Agents/Preferences/Subsystems/TouristSettingsSubsystem.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristSpawnSourceFragment.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristStateFragment.h"
 
 namespace TourSim
 {
@@ -136,12 +136,6 @@ void UTouristInitPostSpawnProcessor::Execute(FMassEntityManager& EntityManager, 
 			State[i].RestNeed		= TourSim::RandRangeClamped(Rng, Profile->InitialNeedMin, Profile->InitialNeedMax);
 			State[i].CultureNeed	= TourSim::RandRangeClamped(Rng, Profile->InitialNeedMin, Profile->InitialNeedMax);
 			State[i].HungerNeed		= TourSim::RandRangeClamped(Rng, Profile->InitialNeedMin, Profile->InitialNeedMax);
-			
-			State[i].NextDecisionTimeSeconds = 
-				World->GetTimeSeconds() + 
-				TourSim::RandRangeClamped(Rng, 
-					Profile->InitialDecisionCooldownMin, 
-					Profile->InitialDecisionCooldownMax);
 			
 			State[i].Sanitize();
 			

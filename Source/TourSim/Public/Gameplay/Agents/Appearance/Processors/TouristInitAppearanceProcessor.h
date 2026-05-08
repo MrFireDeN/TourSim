@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "MassObserverProcessor.h"
-#include "TouristAppearanceFragment.h"
 #include "TouristInitAppearanceProcessor.generated.h"
 
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TouristConfigSharedFragment.h"
+#include "../Fragments/TouristConfigSharedFragment.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "TouristSettingsSubsystem.generated.h"
 

@@ -3,7 +3,8 @@
 
 #include "Gameplay/Agents/Appearance/TouristAppearanceTrait.h"
 #include "MassEntityTemplateRegistry.h"
-#include "Gameplay/Agents/Appearance/TouristAppearanceAppliedFragment.h"
+#include "Gameplay/Agents/Appearance/Fragments/TouristAppearanceAppliedFragment.h"
+#include "Gameplay/Agents/Appearance/Fragments/TouristAppearanceFragment.h"
 
 void UTouristAppearanceTrait::BuildTemplate(FMassEntityTemplateBuildContext& BuildContext, const UWorld& World) const
 {

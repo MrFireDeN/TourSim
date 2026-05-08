@@ -1,7 +1,7 @@
 ﻿// © 2026 Denis Sviridov. MIT License.
 
 
-#include "Gameplay/Agents/Preferences/TouristSettingsSubsystem.h"
+#include "Gameplay/Agents/Preferences/Subsystems/TouristSettingsSubsystem.h"
 
 void UTouristSettingsSubsystem::SetCurrentConfig(const FTouristConfigSharedFragment& NewConfig)
 {

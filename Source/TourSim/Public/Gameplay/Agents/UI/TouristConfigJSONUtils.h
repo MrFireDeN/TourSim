@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Gameplay/Agents/Preferences/TouristConfigSharedFragment.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristConfigSharedFragment.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "TouristConfigJSONUtils.generated.h"
 

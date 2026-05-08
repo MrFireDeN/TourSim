@@ -1,9 +1,11 @@
 ﻿// © 2026 Denis Sviridov. MIT License.
 
-#include "Gameplay/Agents/Appearance/TouristInitAppearanceProcessor.h"
+#include "Gameplay/Agents/Appearance/Processors/TouristInitAppearanceProcessor.h"
+
 #include "MassCommonFragments.h"
 #include "MassEntityQuery.h"
 #include "MassExecutionContext.h"
+#include "Gameplay/Agents/Appearance/Fragments/TouristAppearanceFragment.h"
 
 UTouristInitAppearanceProcessor::UTouristInitAppearanceProcessor()
 {

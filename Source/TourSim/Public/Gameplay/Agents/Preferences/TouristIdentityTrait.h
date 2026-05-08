@@ -5,12 +5,12 @@
 #include "CoreMinimal.h"
 #include "MassEntityTraitBase.h"
 
-#include "TouristPreferencesFragment.h"
-#include "TouristStateFragment.h"
-#include "TouristIdentityFragment.h"
-#include "TouristSpawnSourceFragment.h"
-#include "TouristConfigSharedFragment.h"
-#include "TouristTrait.generated.h"
+#include "Fragments/TouristPreferencesFragment.h"
+#include "Fragments/TouristStateFragment.h"
+#include "Fragments/TouristIdentityFragment.h"
+#include "Fragments/TouristSpawnSourceFragment.h"
+#include "Fragments/TouristConfigSharedFragment.h"
+#include "TouristIdentityTrait.generated.h"
 
 
 class UTouristNamePoolDataAsset;
@@ -23,7 +23,7 @@ class UTouristNamePoolDataAsset;
  *   triggered by FTouristNeedsInitTag (added by the spawner after it sets SpawnSource).
  */
 UCLASS(DisplayName="Tourist Trait")
-class TOURSIM_API UTouristTrait final : public UMassEntityTraitBase
+class TOURSIM_API UTouristIdentityTrait final : public UMassEntityTraitBase
 {
 	GENERATED_BODY()
 

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "MassEntityTraitBase.h"
-#include "TouristAppearanceFragment.h"
 #include "TouristAppearanceTrait.generated.h"
 
 

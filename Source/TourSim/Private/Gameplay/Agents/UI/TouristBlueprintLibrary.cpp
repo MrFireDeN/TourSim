@@ -6,12 +6,12 @@
 #include "MassAgentComponent.h"
 #include "MassEntitySubsystem.h"
 #include "MassEntityTypes.h"
-#include "Gameplay/Agents/Preferences/TouristConfigSharedFragment.h"
-#include "Gameplay/Agents/Preferences/TouristIdentityFragment.h"
-#include "Gameplay/Agents/Preferences/TouristNamePoolSubsystem.h"
-#include "Gameplay/Agents/Preferences/TouristPreferencesFragment.h"
-#include "Gameplay/Agents/Preferences/TouristSpawnSourceFragment.h"
-#include "Gameplay/Agents/Preferences/TouristStateFragment.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristConfigSharedFragment.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristIdentityFragment.h"
+#include "Gameplay/Agents/Preferences/Subsystems/TouristNamePoolSubsystem.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristPreferencesFragment.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristSpawnSourceFragment.h"
+#include "Gameplay/Agents/Preferences/Fragments/TouristStateFragment.h"
 #include "Gameplay/Agents/UI/TouristEntityReference.h"
 
 bool UTouristBlueprintLibrary::GetTouristSnapshot(

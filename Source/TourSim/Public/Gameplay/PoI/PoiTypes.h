@@ -13,7 +13,7 @@ struct FMassEntityHandle;
 UENUM(BlueprintType, meta = (DisplayName = "Point of Interest Type"))
 enum class EPoiType : uint8
 {
-	Custom		UMETA(DisplayName = "Custom"),
+	None		UMETA(DisplayName="None"),
 	Bench		UMETA(DisplayName="Bench"),
 	Monument	UMETA(DisplayName="Monument"),
 	FastFood	UMETA(DisplayName="FastFood")

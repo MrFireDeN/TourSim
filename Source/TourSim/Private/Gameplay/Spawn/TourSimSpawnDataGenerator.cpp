@@ -6,7 +6,7 @@
 #include "GameplayEffectAttributeCaptureDefinition.h"
 #include "MassEntityConfigAsset.h"
 #include "MassSpawnLocationProcessor.h"
-#include "Gameplay/Agents/Preferences/TouristInitPostSpawnProcessor.h"
+#include "Gameplay/Agents/Preferences/Processors/TouristInitPostSpawnProcessor.h"
 #include "Gameplay/Spawn/TouristSpawnSourceBase.h"
 #include "Gameplay/Spawn/TourSimSpawnData.h"
 #include "Gameplay/Spawn/TourSimSpawnLog.h"

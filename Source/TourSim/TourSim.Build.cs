@@ -27,6 +27,13 @@ public class TourSim : ModuleRules
 			"MassSpawner",      
 			"MassLOD",          
 			"MassRepresentation",
+			"MassNavigation",
+			"MassAIBehavior",
+			"MassSignals",
+			
+			// Nav
+			"NavigationSystem",
+			"StateTreeModule",
 			
 			// Utils
 			"StructUtils",
