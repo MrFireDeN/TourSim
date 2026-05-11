@@ -5,6 +5,7 @@
 
 #include "MassActorSubsystem.h"
 #include "MassRepresentationFragments.h"
+#include "MassRepresentationSubsystem.h"
 #include "Gameplay/Agents/Appearance/Fragments/TouristAppearanceAppliedFragment.h"
 #include "Gameplay/Agents/Appearance/Fragments/TouristAppearanceFragment.h"
 
@@ -43,8 +44,9 @@ UTouristApplyAppearanceProcessor::UTouristApplyAppearanceProcessor()
 {
 	ExecutionFlags = (int32)EProcessorExecutionFlags::All;
 	ProcessingPhase = EMassProcessingPhase::PostPhysics;
-	
 	bRequiresGameThreadExecution = true;
+	
+	ExecutionOrder.ExecuteBefore.Add(UE::Mass::ProcessorGroupNames::Representation);
 }
 
 void UTouristApplyAppearanceProcessor::ConfigureQueries()
@@ -53,8 +55,15 @@ void UTouristApplyAppearanceProcessor::ConfigureQueries()
 	EntityQuery.AddRequirement<FMassRepresentationFragment>(EMassFragmentAccess::ReadOnly);
 	EntityQuery.AddRequirement<FMassActorFragment>(EMassFragmentAccess::ReadOnly);
 	EntityQuery.AddRequirement<FTouristAppearanceAppliedFragment>(EMassFragmentAccess::ReadWrite);
-
 	EntityQuery.RegisterWithProcessor(*this);
+	
+	ISMQuery.AddRequirement<FTouristAppearanceFragment>(EMassFragmentAccess::ReadOnly);
+	ISMQuery.AddRequirement<FMassRepresentationFragment>(EMassFragmentAccess::ReadWrite);
+	ISMQuery.AddRequirement<FMassRepresentationLODFragment>(EMassFragmentAccess::ReadOnly);
+	ISMQuery.AddSharedRequirement<FMassRepresentationSubsystemSharedFragment>(EMassFragmentAccess::ReadWrite);
+	ISMQuery.AddChunkRequirement<FMassVisualizationChunkFragment>(EMassFragmentAccess::ReadOnly);
+	ISMQuery.SetChunkFilter(&FMassVisualizationChunkFragment::AreAnyEntitiesVisibleInChunk);
+	ISMQuery.RegisterWithProcessor(*this);
 }
 
 void UTouristApplyAppearanceProcessor::Execute(FMassEntityManager& EntityManager, FMassExecutionContext& Context)
@@ -76,9 +85,6 @@ void UTouristApplyAppearanceProcessor::Execute(FMassEntityManager& EntityManager
 			const bool bIsSpawnedActor =
 				(Rep.CurrentRepresentation == EMassRepresentationType::HighResSpawnedActor) ||
 				(Rep.CurrentRepresentation == EMassRepresentationType::LowResSpawnedActor);
-
-			if (!bIsSpawnedActor)
-				continue;
 			
 			AActor* Actor = const_cast<AActor*>(Actors[i].Get());
 			if (!Actor)
@@ -96,4 +102,56 @@ void UTouristApplyAppearanceProcessor::Execute(FMassEntityManager& EntityManager
 			Applied[i].LastColorHash = ColorHash;
 		}
 	});
+	
+	
+	ISMQuery.ForEachEntityChunk(EntityManager, Context, [&](FMassExecutionContext& Ctx)
+    {
+        UMassRepresentationSubsystem* RepSubsystem = Ctx.GetSharedFragment<FMassRepresentationSubsystemSharedFragment>().RepresentationSubsystem;
+        if (!RepSubsystem)
+        {
+	        return;
+        }
+
+        FMassInstancedStaticMeshInfoArrayView ISMInfos = RepSubsystem->GetMutableInstancedStaticMeshInfos();
+
+        TConstArrayView<FTouristAppearanceFragment> Appearances = Ctx.GetFragmentView<FTouristAppearanceFragment>();
+        TConstArrayView<FMassRepresentationFragment> Representations = Ctx.GetFragmentView<FMassRepresentationFragment>();
+        TConstArrayView<FMassRepresentationLODFragment> LODs = Ctx.GetFragmentView<FMassRepresentationLODFragment>();
+
+        for (int32 i = 0; i < Ctx.GetNumEntities(); ++i)
+        {
+        	
+            const FMassRepresentationFragment& Rep = Representations[i];
+            if (Rep.CurrentRepresentation != EMassRepresentationType::StaticMeshInstance)
+                continue;
+
+            if (!Rep.StaticMeshDescHandle.IsValid())
+                continue;
+
+            const int32 DescIndex = Rep.StaticMeshDescHandle.ToIndex();
+            if (!ISMInfos.IsValidIndex(DescIndex))
+                continue;
+
+            FMassInstancedStaticMeshInfo& ISMInfo = ISMInfos[DescIndex];
+        	
+            FMassLODSignificanceRange* LODRange = ISMInfo.GetLODSignificanceRange(LODs[i].LODSignificance);
+            if (!LODRange)
+            {
+	            continue;
+            }
+
+            struct FTouristISMColorData
+            {
+                FVector3f TopColor;
+                FVector3f BottomColor;
+                FVector3f HairColor;
+            };
+            FTouristISMColorData ColorData;
+            ColorData.TopColor = FVector3f(Appearances[i].TopColor);
+            ColorData.BottomColor = FVector3f(Appearances[i].BottomColor);
+            ColorData.HairColor = FVector3f(Appearances[i].HairColor);
+
+            LODRange->AddBatchedCustomData(ColorData, TArray<FISMCSharedDataKey>(), 0);
+        }
+    });
 }

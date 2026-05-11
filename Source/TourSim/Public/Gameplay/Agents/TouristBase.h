@@ -6,37 +6,38 @@
 #include "GameFramework/Actor.h"
 #include "TouristBase.generated.h"
 
-class UMassAgentComponent;
 class UArrowComponent;
 class USkeletalMeshComponent;
-class UCapsuleComponent;
 
-UCLASS()
-class TOURSIM_API ATouristBase : public AActor
+/**
+ * Minimal Pawn representation for Mass Framework.
+ * Inherits from APawn for Animation Blueprint compatibility (TryGetPawnOwner).
+ * All heavy/unnecessary features are disabled in the constructor.
+ */
+UCLASS(Blueprintable, BlueprintType, meta = (DisplayName = "Tourist Base"))
+class TOURSIM_API ATouristBase : public APawn
 {
 	GENERATED_BODY()
 
 public:
-	ATouristBase();
-
+	ATouristBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	
+	/** Returns the skeletal mesh component. */
+	USkeletalMeshComponent* GetMesh() const { return Mesh; }
+	
 protected:
 	virtual void BeginPlay() override;
-
-public:
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaSeconds) override;
+	virtual FVector GetVelocity() const override { return CurrentVelocity; }
 	
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Agent", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agent", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UCapsuleComponent> CapsuleComponent;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Animation")
+	float RotationSpeed = 5.0f;
 	
-#if WITH_EDITORONLY_DATA
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Agent", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UArrowComponent> ArrowComponent;
-#endif
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Agent", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UMassAgentComponent> MassAgentComponent;
+private:
+	FVector CurrentVelocity = FVector::ZeroVector;
+	FVector LastLocation = FVector::ZeroVector;
+	bool bFirstTick = true;
 };

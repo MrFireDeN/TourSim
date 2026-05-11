@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MassEntityTypes.h"
+#include "MassRepresentationTypes.h"
 #include "TouristAppearanceAppliedFragment.generated.h"
 
 
@@ -14,4 +15,5 @@ struct FTouristAppearanceAppliedFragment : public FMassFragment
 
 	FObjectKey LastActorKey;
 	uint32 LastColorHash = 0;
+	FStaticMeshInstanceVisualizationDescHandle LastISMHandle;
 };

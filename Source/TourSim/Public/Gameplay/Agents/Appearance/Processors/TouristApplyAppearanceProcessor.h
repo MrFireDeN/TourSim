@@ -21,4 +21,5 @@ protected:
 
 private:
 	FMassEntityQuery EntityQuery;
+	FMassEntityQuery ISMQuery;
 };

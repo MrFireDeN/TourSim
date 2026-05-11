@@ -3,46 +3,50 @@
 
 #include "Gameplay/Agents/TouristBase.h"
 
-#include "MassAgentComponent.h"
 #include "Components/ArrowComponent.h"
-#include "Components/CapsuleComponent.h"
+#include "Components/PawnNoiseEmitterComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 
 
-ATouristBase::ATouristBase()
+ATouristBase::ATouristBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	
-	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
-	RootComponent = CapsuleComponent;
+	USceneComponent* Root = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	SetRootComponent(Root);
 	
-	CapsuleComponent->InitCapsuleSize(30.0f, 89.0f);
-	CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CapsuleComponent->SetGenerateOverlapEvents(false);
-	
-	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>("Mesh");
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
 	Mesh->SetupAttachment(RootComponent);
-	
-	Mesh->SetRelativeLocation(FVector(0.0f, 0.0f, -89.0f));
-	Mesh->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	Mesh->SetGenerateOverlapEvents(false);
-	
-	MassAgentComponent = CreateDefaultSubobject<UMassAgentComponent>("MassAgentComponent");
-	
-#if WITH_EDITORONLY_DATA
-	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
-	ArrowComponent->SetupAttachment(RootComponent);
-	ArrowComponent->SetHiddenInGame(true);
-#endif
 }
 
 void ATouristBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	LastLocation = GetActorLocation();
+	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ATouristBase::Tick(float DeltaTime)
+void ATouristBase::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(DeltaSeconds);
+	
+	if (bFirstTick)
+	{
+		bFirstTick = false;
+		return;
+	}
+
+	const FVector CurrentLocation = GetActorLocation();
+	if (DeltaSeconds > SMALL_NUMBER)
+	{
+		CurrentVelocity = (CurrentLocation - LastLocation) / DeltaSeconds;
+		
+		if (CurrentVelocity.Size() > 0.1f)
+		{
+			const FRotator TargetRotation = CurrentVelocity.Rotation();
+			SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaSeconds, RotationSpeed));
+		}
+	}
+	LastLocation = CurrentLocation;
 }
