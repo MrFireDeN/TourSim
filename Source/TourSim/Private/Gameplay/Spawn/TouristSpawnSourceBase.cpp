@@ -101,7 +101,8 @@ bool ATouristSpawnSourceBase::GetCandidateTransform(FTransform& OutTransform) co
 	const FVector Extent = SpawnArea->GetScaledBoxExtent();
 
 	const FVector RandomPoint = UKismetMathLibrary::RandomPointInBoundingBox(Origin, Extent);
-
-	OutTransform = FTransform(GetActorRotation(), RandomPoint, FVector::OneVector);
+	const FVector CandidateLocation = FVector(RandomPoint.X, RandomPoint.Y, 0);
+	
+	OutTransform = FTransform(GetActorRotation(), CandidateLocation, FVector::OneVector);
 	return true;
 }

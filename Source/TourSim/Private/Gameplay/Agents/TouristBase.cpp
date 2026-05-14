@@ -6,6 +6,12 @@
 #include "Components/ArrowComponent.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Tasks/MassClaimSmartObjectTask.h"
+#include "Tasks/MassFindSmartObjectTask.h"
+#include "Tasks/MassUseSmartObjectTask.h"
+#include "Tasks/MassZoneGraphFindEscapeTarget.h"
+#include "Tasks/MassZoneGraphFindSmartObjectTarget.h"
+#include "Tasks/MassZoneGraphStandTask.h"
 
 
 ATouristBase::ATouristBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -36,6 +42,8 @@ void ATouristBase::Tick(float DeltaSeconds)
 		bFirstTick = false;
 		return;
 	}
+	
+	FMassClaimSmartObjectTask;
 
 	const FVector CurrentLocation = GetActorLocation();
 	if (DeltaSeconds > SMALL_NUMBER)

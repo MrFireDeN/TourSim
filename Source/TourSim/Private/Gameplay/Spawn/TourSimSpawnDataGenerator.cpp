@@ -251,7 +251,8 @@ bool UTourSimSpawnDataGenerator::TryBuildValidatedTransform(UWorld& World, UObje
 bool UTourSimSpawnDataGenerator::ValidatePoint(UWorld& World, UObject& QueryOwner, AActor* SourceActor,
 	FTransform& InOutTransform) const
 {
-	ATouristSpawnSourceBase* Source = Cast<ATouristSpawnSourceBase>(SourceActor);
+	return true;
+	/*ATouristSpawnSourceBase* Source = Cast<ATouristSpawnSourceBase>(SourceActor);
 	if (!IsValid(Source))
 	{
 		return false;
@@ -280,7 +281,7 @@ bool UTourSimSpawnDataGenerator::ValidatePoint(UWorld& World, UObject& QueryOwne
 	UE_LOG(LogTourSimSpawn, Warning, TEXT("[Validate] CapsuleOverlap FAIL after lift. Source=%s Pos=%s"),
 		SourceActor ? *SourceActor->GetName() : TEXT("None"),
 		*InOutTransform.GetLocation().ToString());
-	return false;
+	return false;*/
 }
 
 bool UTourSimSpawnDataGenerator::CapsuleOverlapTest(UWorld& World, const FTransform& Transform, UObject& QueryOwner,

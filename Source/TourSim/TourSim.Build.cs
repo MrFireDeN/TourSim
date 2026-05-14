@@ -30,6 +30,8 @@ public class TourSim : ModuleRules
 			"MassNavigation",
 			"MassAIBehavior",
 			"MassSignals",
+			"SmartObjectsModule",
+			"MassSmartObjects",
 			
 			// Nav
 			"NavigationSystem",
