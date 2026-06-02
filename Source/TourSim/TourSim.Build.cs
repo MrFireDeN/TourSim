@@ -30,7 +30,6 @@ public class TourSim : ModuleRules
 			"MassNavigation",
 			"MassAIBehavior",
 			"MassSignals",
-			"SmartObjectsModule",
 			"MassSmartObjects",
 			
 			// Nav
@@ -38,7 +37,6 @@ public class TourSim : ModuleRules
 			"StateTreeModule",
 			
 			// Utils
-			"StructUtils",
 			"Json",
 			"JsonUtilities",
 			"DesktopPlatform",
